@@ -11,6 +11,23 @@ createInertiaApp({
     title: (title) => `${title} - ${appName}`,
     resolve: (name) => resolvePageComponent(`./Pages/${name}.jsx`, import.meta.glob('./Pages/**/*.jsx')),
     setup({ el, App, props }) {
+        // ヘルパー関数を登録
+        window.__ = window.trans = (key = null, replace = {}, locale = null) => {
+            const {currentLocale, localeData} = props.initialPage.props.locale;
+
+            if(locale === null) {
+                locale = currentLocale;
+            }
+
+            let translatedText = localeData[locale][key] || key;
+
+            for(let key in replace) {
+                const replacingValue = replace[key];
+                translatedText = translatedText.replace(`:${key}`, replacingValue);
+            }
+            return translatedText;
+        };
+
         const root = createRoot(el);
 
         root.render(<App {...props} />);
