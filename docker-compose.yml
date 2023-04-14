@@ -1,0 +1,65 @@
+services:
+  web:    # サービス名 nginx（リバースプロキシではなくサーバーの方）
+    build:
+      context: .
+      dockerfile: ./docker/web/Dockerfile
+    # ports:
+    #   - 8001:80 # 直接アクセスのポート。ローカル開発用にポート開けておく
+    env_file:
+        - .env-reverse-proxy.env  # リバースプロキシ用の設定値
+    # environment:
+    depends_on:
+      - app
+    volumes:
+      - ./:/app # プロジェクトフォルダ直下にlaravelのファイルを入れるから
+
+  app:    # サービス名 php-rpm。これにlaravelをインストールしてwebアプリを作る
+    build:
+      context: .
+      dockerfile: ./docker/app/Dockerfile
+    ports:
+        - 5173:5173  # 開発用vite（npm run dev）のポート
+    env_file:
+      - .env                # まずlaravelの.envを読み込む
+      - .env-overwrite.env  # laravelの.envに上書きする値(DB情報含む)と追加する値
+    # environment:
+    volumes:
+        # プロジェクトフォルダ直下にlaravelのファイルを入れるから
+        - ./:/app
+        # crontab -eの編集を保持する。直接編集もできて楽
+        - ./cron/crontabs/:/var/spool/cron/crontabs/
+    depends_on:
+      - db
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+        # リバースプロキシが8080に反応して、appのブラウザ表示がバグるので8081にしておく
+        - '${PHP_ADMIN_PORT:-8081}:80'
+    env_file:
+        - .env-overwrite.env  # DBっ情報であるPMA_〇〇の値
+    # environment:
+    depends_on:
+        - db
+
+  db:    # サービス名 mysql
+    build:
+      context: .
+      dockerfile: ./docker/db/Dockerfile
+    ports:
+      # 右側の[:3306]は変えてはダメっぽい
+      # - 3306:3306
+      - 3306
+    env_file:
+        - .env-overwrite.env  # MYSQL_〇〇の値
+    # environment:
+    volumes:
+      - mysql-volume:/var/lib/mysql
+
+networks:
+  default:
+    name: nginx-proxy
+    external: true
+
+volumes:
+  mysql-volume:
