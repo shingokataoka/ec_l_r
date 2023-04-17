@@ -4,7 +4,7 @@ import react from '@vitejs/plugin-react';
 
 import fs from 'fs'; // [tl! 追加]
 
-const host = 'laravel_hoge.localhost'; // [tl! 追加]
+const host = 'e_l_r.localhost'; // [tl! 追加]
 
 export default defineConfig({
     plugins: [
