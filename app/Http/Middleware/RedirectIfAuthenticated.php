@@ -17,10 +17,18 @@ class RedirectIfAuthenticated
      */
     public function handle(Request $request, Closure $next, string ...$guards): Response
     {
-        $guards = empty($guards) ? [null] : $guards;
+        // $guards = empty($guards) ? [null] : $guards;
 
-        foreach ($guards as $guard) {
-            if (Auth::guard($guard)->check()) {
+        $guards = [
+            ['admin', 'admin', RouteServiceProvider::ADMIN_HOME],
+            ['owner', 'owner', RouteServiceProvider::OWNER_HOME],
+        ];
+
+        foreach ($guards as $row) {
+            [$guard, $prefix, $home] = $row;
+            if (Auth::guard($guard)->check() && $request->routeIs("{$prefix}.*")) {
+                return redirect($home);
+            } elseif( Auth::guard('web')->check() ) {
                 return redirect(RouteServiceProvider::HOME);
             }
         }

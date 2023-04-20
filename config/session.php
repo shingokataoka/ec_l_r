@@ -130,6 +130,9 @@ return [
         'SESSION_COOKIE',
         Str::slug(env('APP_NAME', 'laravel'), '_').'_session'
     ),
+    // admin用とowner用のセッションクッキーファイルの用意を設定
+    'cookie_admin' => Str::slug(env('APP_NAME', 'laravel'), '_').'_session_admin',
+    'cookie_owner' => Str::slug(env('APP_NAME', 'laravel'), '_').'_session_owner',
 
     /*
     |--------------------------------------------------------------------------

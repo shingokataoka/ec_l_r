@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\URL; // 追加
 
 use Inertia\Inertia;    // lang/jaデータをInertia(React)側に送るため、追加
 
-
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -36,6 +35,14 @@ class AppServiceProvider extends ServiceProvider
 
         // reactで__('Dashboard')など言語メソッドを使えるようにする
         $this->reactFuncTransCreate();
+
+        // 利用するクッキーをプレフィックスで分ける
+        $currentPrefix = explode('/', request()->path() )[0];
+        foreach(['admin', 'owner'] as $prefix) {
+            if ( $currentPrefix === $prefix ) {
+                config(['session.cookie' => config("session.cookie_{$prefix}")]);
+            }
+        }
     }
 
     // reactで__('Dashboard')など言語メソッドを使えるようにする
