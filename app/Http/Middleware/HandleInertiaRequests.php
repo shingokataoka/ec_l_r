@@ -42,6 +42,7 @@ class HandleInertiaRequests extends Middleware
             '_token' => function () use($request) {
                 $token = $request->cookie('XSRF-TOKEN');
                 if ($request->routeIs('admin.*')) $token = $request->cookie('ADMIN-XSRF-TOKEN');
+                if ($request->routeIs('owner.*')) $token = $request->cookie('OWNER-XSRF-TOKEN');
                 // dd($token);
                 return $token;
             }
