@@ -15,10 +15,13 @@ class OwnerSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('owners')->insert([
-            'name' => 'owner1',
-            'email' => 'owner1@test.com',
-            'password' => Hash::make('owner1111'),
-        ]);
+        for ($i = 1; $i <= 10; $i++ ) {
+            DB::table('owners')->insert([
+                'name' => "owner{$i}",
+                'email' => "owner{$i}@test.com",
+                'created_at' => fake()->dateTime,
+                'password' => Hash::make("owner{$i}{$i}{$i}{$i}"),
+            ]);
+        }
     }
 }

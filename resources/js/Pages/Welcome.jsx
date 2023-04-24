@@ -1,7 +1,8 @@
 import { Link, Head } from '@inertiajs/react';
-import axios from 'axios';
+
 
 export default function Welcome({ auth, laravelVersion, phpVersion }) {
+
     return (
         <>
         { __('Dashboard') }

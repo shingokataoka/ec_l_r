@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\ProfileController;
 use Inertia\Inertia;
 
+use App\Http\Controllers\Admin\OwnersController;
 
 Route::get('/dashboard', function () {
     return Inertia::render('Admin/Dashboard');
@@ -72,3 +73,7 @@ Route::middleware('auth:admin')->group(function () {
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
                 ->name('logout');
 });
+
+
+Route::resource('owners', OwnersController::class)
+    ->middleware('auth:admin');

@@ -3,6 +3,7 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Illuminate\Http\Request;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,4 +32,8 @@ Route::prefix('admin')->name('admin.')->group(function() {
 });
 Route::prefix('owner')->name('owner.')->group(function() {
     require __DIR__.'/owner.php';
+});
+
+Route::prefix('admin/api')->name('admin.api.')->middleware('auth:admin')->group(function() {
+    require __DIR__ . '/apiAdmin.php';
 });
