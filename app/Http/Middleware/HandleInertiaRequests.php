@@ -39,6 +39,18 @@ class HandleInertiaRequests extends Middleware
                     'location' => $request->url(),
                 ]);
             },
+            '_token' => function () use($request) {
+                $token = $request->cookie('XSRF-TOKEN');
+                if ($request->routeIs('admin.*')) $token = $request->cookie('ADMIN-XSRF-TOKEN');
+                if ($request->routeIs('owner.*')) $token = $request->cookie('OWNER-XSRF-TOKEN');
+                // dd($token);
+                return $token;
+            },
+            //  フラッシュメッセージを取得
+            'flash' => [
+                'message' => fn () => $request->session()->get('message'),
+                'status' => fn () => $request->session()->get('status'),
+            ]
         ]);
     }
 }
