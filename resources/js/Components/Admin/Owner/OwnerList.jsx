@@ -12,8 +12,8 @@ import Pagination from '@mui/material/Pagination';
 import Stack from '@mui/material/Stack';
 
 import axios from 'axios';
-import { router } from '@inertiajs/react';
-import { Button, Container } from '@mui/material';
+import { router, useForm, usePage } from '@inertiajs/react';
+import { Box, Button, Container } from '@mui/material';
 
 import dayjs from 'dayjs';
 // プラグインが必要
@@ -45,20 +45,25 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 export default function CustomizedTables({ owners }) {
+    const [message, setMessage] = React.useState(null)
     const [ownerList, setOwnerList] = React.useState(owners)
     const [pageColor, setPageColor] = React.useState('primary')
     const [page, setPage] = React.useState(owners.current_page)
+    const _token = usePage().props._token
+    const axiosObj = axios.create({
+        xsrfCookieName: 'ADMIN-XSRF-TOKEN',
+        withCredentials: true,
+    })
+    const { delete: destroy } = useForm({
+        _token: _token,
+    })
+
     // ページを変えた処理
     const handlePagination = (e, currentPage) => {
         setPageColor('secondary')
 
-        // ADMIN-XSRF-TOKENを指定したaxiosのインスタンスを生成
-        const axiosPost = axios.create({
-            xsrfCookieName: 'ADMIN-XSRF-TOKEN',
-            withCredentials: true
-        })
         // 生成したインスタンスでaxiosのPOST送信
-        axiosPost(route('admin.api.owners.index'), {
+        axiosObj(route('admin.api.owners.index'), {
             params: {page: currentPage}
         }).then(res => {
             setOwnerList(res.data)
@@ -68,8 +73,30 @@ export default function CustomizedTables({ owners }) {
         })
     }
 
+    // 「削除」押した処理
+    const deleteClick = owner => {
+        // if (!confirm('本当に削除しますか？')) return
+        axiosObj.delete(route('admin.owners.destroy', {owner: owner.id}))
+        const newList = ownerList.data.filter(row => row.id !== owner.id)
+        setOwnerList({
+            ...ownerList,
+            data: newList,
+        })
+        setMessage(`「${owner.name}」を削除しました。`)
+    }
     return (
         <Container maxWidth="md">
+            { message !== null &&
+                <Box sx={{
+                    bgcolor: 'error.main',
+                    m:2, p:2,
+                    borderRadius: 1,
+                    }}
+                >
+                    {message}
+                </Box>
+            }
+
             <TableContainer component={Paper}>
             <Table sx={{ minWidth: 700 }} aria-label="customized table">
                 <TableHead>
@@ -92,7 +119,7 @@ export default function CustomizedTables({ owners }) {
                     <StyledTableCell align="right">
                         <Button variant="contained" onClick={() => router.get(route('admin.owners.update', {owner: row.id}))}>編集</Button>
                     </StyledTableCell>
-                    <StyledTableCell align="right"><Button variant="contained" color="error">削除</Button></StyledTableCell>
+                    <StyledTableCell align="right"><Button variant="contained" color="error" onClick={() => deleteClick(row)}>削除</Button></StyledTableCell>
                     </StyledTableRow>
                 ))}
                 </TableBody>

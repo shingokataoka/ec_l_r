@@ -10,9 +10,13 @@ use Laravel\Sanctum\HasApiTokens;
 
 use App\Vendor\Illuminate\Auth\Notifications\OwnerResetPassword as ResetPasswordNotification;
 
+use Illuminate\Database\Eloquent\SoftDeletes;
+
 class Owner extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
+
+    use softDeletes;
 
     /**
      * The attributes that are mass assignable.

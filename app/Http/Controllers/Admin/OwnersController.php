@@ -23,8 +23,12 @@ class OwnersController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request)
     {
+        return [
+            'name2' => $request->name,
+            'password2' => $request->password,
+        ];
         dd(__FUNCTION__);
     }
 
@@ -33,6 +37,12 @@ class OwnersController extends Controller
      */
     public function store(Request $request)
     {
+        return [
+            'id2' => $request->id,
+            'name2' => $request->name,
+            'password2' => $request->password,
+        ];
+        dd($request->id,$request->name, 'storeだしInsert');
         dd(__FUNCTION__);
     }
 
@@ -41,6 +51,7 @@ class OwnersController extends Controller
      */
     public function show(string $id)
     {
+        dd($id, 'SHOW');
         dd(__FUNCTION__);
     }
 
@@ -49,6 +60,7 @@ class OwnersController extends Controller
      */
     public function edit(string $id)
     {
+        dd($id, 'EDIT');
         dd(__FUNCTION__);
     }
 
@@ -57,14 +69,19 @@ class OwnersController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        return [
+            'name2' => $request->name,
+            'password2' => $request->password,
+        ];
+        dd($request->name, $request->password, 'Updateで楊貴妃が強化された');
         dd(__FUNCTION__);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Request $request, string $id)
     {
-        dd(__FUNCTION__);
+        $owner = Owner::findOrFail($id)->delete();
     }
 }
